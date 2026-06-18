@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { ThumbsUpButton } from './ThumbsUpButton';
 import { ModalComment } from '../ModalComment';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 export const CardPost = ({
   post,
@@ -34,6 +33,22 @@ export const CardPost = ({
         return response.json();
       });
     },
+    onMutate: async (newData) => {
+      const postQueryKey = ['post', post.slug];
+
+      await queryClient.cancelQueries(postQueryKey);
+
+      const prevPost = queryClient.getQueryData(postQueryKey);
+
+      if (prevPost) {
+        queryClient.setQueryData(postQueryKey, {
+          ...prevPost,
+          likes: prevPost.likes + 1,
+        });
+      }
+
+      return { prevPost };
+    },
     onError: (error, variables) => {
       console.error(
         `Erro ao salvar o thumbsUp para o slug: ${variables.slug}`,
@@ -41,12 +56,6 @@ export const CardPost = ({
       );
     },
   });
-
-  useEffect(() => {
-    if (thumbsMutation.isPending && thumbsMutation.variables) {
-      post.likes = post.likes + 1;
-    }
-  }, [thumbsMutation.isPending, thumbsMutation.variables]);
 
   const submitCommentMutation = useMutation({
     mutationFn: (commentData) => {
