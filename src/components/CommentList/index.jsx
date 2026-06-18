@@ -1,7 +1,7 @@
-import { Comment } from "../Comment";
-import { ReplyModal } from "../ModalReply";
-import { Replies } from "../Replies";
-import styles from "./commentlist.module.css";
+import { Comment } from '../Comment';
+import { ReplyModal } from '../ModalReply';
+import { Replies } from '../Replies';
+import styles from './commentlist.module.css';
 
 export const CommentList = ({ comments, slug }) => {
   return (
@@ -11,7 +11,7 @@ export const CommentList = ({ comments, slug }) => {
         {comments.map((comment) => (
           <li>
             <Comment comment={comment} key={comment.id} />
-            <ReplyModal comment={comment} />
+            <ReplyModal comment={comment} slug={slug} />
             <Replies comment={comment} slug={slug} />
           </li>
         ))}
