@@ -17,7 +17,7 @@ export const CardPost = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const ThumbsMutation = useMutation({
+  const thumbsMutation = useMutation({
     mutationFn: (postData) => {
       return fetch('http://localhost:3000/api/thumbs', {
         method: 'POST',
@@ -25,12 +25,24 @@ export const CardPost = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(postData),
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status ${response.status}`);
+        }
+
+        return response.json();
       });
     },
     onSuccess: () => {
       //invalidate queries
       queryClient.invalidateQueries(['post', post.slug]);
       queryClient.invalidateQueries(['posts', currentPage]);
+    },
+    onError: (error, variables) => {
+      console.error(
+        `Erro ao salvar o thumbsUp para o slug: ${variables.slug}`,
+        { error },
+      );
     },
   });
 
@@ -55,10 +67,15 @@ export const CardPost = ({
           <form
             onClick={(event) => {
               event.preventDefault();
-              ThumbsMutation.mutate({ slug: post.slug });
+              thumbsMutation.mutate({ slug: post.slug });
             }}
           >
             <ThumbsUpButton disable={isFetching} />
+            {thumbsMutation.isError && (
+              <p className={styles.ThumbsUpButtonMessage}>
+                Oops, ocorreu um erro ao salvar thumbsUp
+              </p>
+            )}
             <p>{post.likes}</p>
           </form>
           <div>
