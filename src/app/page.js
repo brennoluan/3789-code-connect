@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useQuery, useQueries } from "@tanstack/react-query";
-import { CardPost } from "@/components/CardPost";
-import { Spinner } from "@/components/Spinner";
-import styles from "./page.module.css";
-import Link from "next/link";
+import { useQuery, useQueries } from '@tanstack/react-query';
+import { CardPost } from '@/components/CardPost';
+import { Spinner } from '@/components/Spinner';
+import styles from './page.module.css';
+import Link from 'next/link';
 
 const fetchPosts = async ({ page }) => {
   const results = await fetch(`http://localhost:3000/api/posts?page=${page}`);
@@ -16,7 +16,7 @@ const fetchPosts = async ({ page }) => {
 
 export const fetchPostRating = async ({ postId }) => {
   const results = await fetch(
-    `http://localhost:3000/api/post?postId=${postId}`
+    `http://localhost:3000/api/post?postId=${postId}`,
   );
 
   const data = results.json();
@@ -33,7 +33,7 @@ export default function Home({ searchParams }) {
     isLoading,
     isFetching,
   } = useQuery({
-    queryKey: ["posts", currentPage],
+    queryKey: ['posts', currentPage],
     queryFn: () => fetchPosts({ page: currentPage }),
     staleTime: 2000,
   });
@@ -42,7 +42,7 @@ export default function Home({ searchParams }) {
     queries:
       posts?.data.length > 0
         ? posts.data.map((post) => ({
-            queryKey: ["postHome", post.id],
+            queryKey: ['postHome', post.id],
             queryFn: () => fetchPostRating({ postId: post.id }),
             enabled: !!post.id,
           }))
@@ -70,13 +70,14 @@ export default function Home({ searchParams }) {
           rating={ratingsAndCartegoriesMap?.[post.id]?.rating}
           category={ratingsAndCartegoriesMap?.[post.id]?.category}
           isFetching={isFetching}
+          currentPage={currentPage}
         />
       ))}
       <div className={styles.links}>
         {posts?.prev && (
           <Link
             href={{
-              pathname: "/",
+              pathname: '/',
               query: { page: posts?.prev, q: searchTerm },
             }}
           >
@@ -86,7 +87,7 @@ export default function Home({ searchParams }) {
         {posts?.next && (
           <Link
             href={{
-              pathname: "/",
+              pathname: '/',
               query: { page: posts?.next, q: searchTerm },
             }}
           >
