@@ -33,7 +33,7 @@ export const CardPost = ({
         return response.json();
       });
     },
-    onMutate: async (newData) => {
+    onMutate: async () => {
       const postQueryKey = ['post', post.slug];
 
       await queryClient.cancelQueries(postQueryKey);
@@ -49,11 +49,20 @@ export const CardPost = ({
 
       return { prevPost };
     },
-    onError: (error, variables) => {
+    onSuccess: () => {
+      if (currentPage) {
+        queryClient.invalidateQueries(['posts', currentPage]);
+      }
+    },
+    onError: (error, variables, context) => {
       console.error(
         `Erro ao salvar o thumbsUp para o slug: ${variables.slug}`,
         { error },
       );
+
+      if (context.prevPost) {
+        queryClient.setQueryData(['post', post.slug], context.prevPost);
+      }
     },
   });
 
